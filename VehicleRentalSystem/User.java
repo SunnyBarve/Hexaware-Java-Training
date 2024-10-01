@@ -1,5 +1,5 @@
 package com.hexaware.mainvehicleprogram;
-
+import com.hexaware.exceptions.*;
 import com.hexaware.abstractclasses.Vehicle;
 
 // Class representing a user who can rent and return vehicles
@@ -15,36 +15,33 @@ public class User {
     }
 
     // Method to rent a vehicle
-    public void rentVehicle(Vehicle vehicle) {
+    public void rentVehicle(Vehicle vehicle) throws VehicleNotAvailableException, MaxRentedVehiclesException {
         // Check if the vehicle is not already rented
-        if (!vehicle.isRented()) {
-            vehicle.rentVehicle(); // Mark the vehicle as rented
-            rentedVehicles[rentedCount] = vehicle; // Add vehicle to the rented array
-            rentedCount++; // Increment the rented count
-            System.out.println(vehicle.getName() + " has been rented.");
-        } else {
-            System.out.println(vehicle.getName() + " is already rented.");
+    	if (vehicle.isRented()) {
+            throw new VehicleNotAvailableException(vehicle.getName() + " is already rented.");
         }
+        if (rentedCount >= rentedVehicles.length) {
+            throw new MaxRentedVehiclesException("You cannot rent more vehicles. Max limit reached.");
+        }
+        vehicle.rentVehicle();
+        rentedVehicles[rentedCount++] = vehicle;
     }
 
     // Method to return a rented vehicle
-    public void returnVehicle(Vehicle vehicle) {
+    public void returnVehicle(Vehicle vehicle) throws VehicleNotRentedException {
         boolean found = false; // Flag to check if the vehicle was found
         // Iterate through the rented vehicles to find the vehicle
         for (int i = 0; i < rentedCount; i++) {
-            if (rentedVehicles[i] == vehicle) { // Check if the vehicle matches
-                vehicle.returnVehicle(); // Mark the vehicle as returned
-                rentedVehicles[i] = rentedVehicles[rentedCount - 1]; // Replace it with the last rented vehicle
-                rentedVehicles[rentedCount - 1] = null; // Clear the last position
-                rentedCount--; // Decrement the rented count
-                found = true; // Vehicle found and returned
-                System.out.println(vehicle.getName() + " has been returned.");
-                break;
-            }
+        	 if (rentedVehicles[i].equals(vehicle)) {
+                 vehicle.returnVehicle();
+                 rentedVehicles[i] = rentedVehicles[--rentedCount];  // Shift the last vehicle into the returned vehicle's slot
+                 found = true;
+                 break;
+             }
         }
         // If the vehicle was not found in the rented list
         if (!found) {
-            System.out.println("You haven't rented this vehicle.");
+        	 throw new VehicleNotRentedException("You haven't rented this vehicle.");
         }
     }
 
