@@ -1,4 +1,6 @@
 package com.hexaware.mainvehicleprogram;
+import com.hexaware.exceptions.*;
+import com.hexaware.abstractclasses.Vehicle;
 
 import com.hexaware.abstractclasses.Vehicle;
 import com.hexaware.concreteclasses.Car;
@@ -27,7 +29,7 @@ public class MainVehicleProgram {
 	            System.out.println("4. Exit");
 	            System.out.print("Choose an option: ");
 	            int choice = scanner.nextInt(); // Get user's choice
-
+               try {
 	            switch (choice) {
 	                case 1:
 	                    // Display available vehicles for renting
@@ -38,15 +40,19 @@ public class MainVehicleProgram {
 	                    System.out.print("Choose a vehicle to rent: ");
 	                    int vehicleChoice = scanner.nextInt(); // Get vehicle choice
 	                    // Rent the chosen vehicle
-	                    if (vehicleChoice == 1) {
-	                        user.rentVehicle(car);
-	                    } else if (vehicleChoice == 2) {
-	                        user.rentVehicle(bike);
-	                    } else if (vehicleChoice == 3) {
-	                        user.rentVehicle(truck);
-	                    } else {
-	                        System.out.println("Invalid choice.");
-	                    }
+	                    switch (vehicleChoice) {
+                        case 1:
+                            user.rentVehicle(car);
+                            break;
+                        case 2:
+                            user.rentVehicle(bike);
+                            break;
+                        case 3:
+                            user.rentVehicle(truck);
+                            break;
+                        default:
+                            throw new InvalidChoiceException("Invalid vehicle choice.");
+                    }
 	                    break;
 	                case 2:
 	                    // Allow the user to return a rented vehicle
@@ -57,14 +63,18 @@ public class MainVehicleProgram {
 	                    System.out.print("Choose a vehicle to return: ");
 	                    int returnChoice = scanner.nextInt(); // Get return choice
 	                    // Return the chosen vehicle
-	                    if (returnChoice == 1) {
-	                        user.returnVehicle(car);
-	                    } else if (returnChoice == 2) {
-	                        user.returnVehicle(bike);
-	                    } else if (returnChoice == 3) {
-	                        user.returnVehicle(truck);
-	                    } else {
-	                        System.out.println("Invalid choice.");
+	                    switch (returnChoice) {
+                        case 1:
+                            user.returnVehicle(car);
+                            break;
+                        case 2:
+                            user.returnVehicle(bike);
+                            break;
+                        case 3:
+                            user.returnVehicle(truck);
+                            break;
+                        default:
+                            throw new InvalidChoiceException("Invalid vehicle choice.");
 	                    }
 	                    break;
 	                case 3:
@@ -78,8 +88,11 @@ public class MainVehicleProgram {
 	                    return;
 	                default:
 	                    // Handle invalid menu choices
-	                    System.out.println("Invalid choice");
+	                	  throw new InvalidChoiceException("Invalid menu choice.");
 	            }
-	        }
-	    }
-	}		
+               } catch (InvalidChoiceException | VehicleNotAvailableException | MaxRentedVehiclesException | VehicleNotRentedException e) {
+                   System.out.println(e.getMessage());
+               }
+           }
+       }
+   }
